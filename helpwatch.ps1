@@ -4,14 +4,16 @@
 $ErrorActionPreference = "Stop"
 Set-Location -Path $PSScriptRoot
 
-# Set your webhook URL in helpwatch.cfg (copy helpwatch.cfg.example and fill it in)
-$cfgPath = Join-Path $PSScriptRoot "helpwatch.cfg"
+# Webhook URL is set in-game via the [HW] button and saved to helpwatch_settings.txt.
+# First-time setup: copy helpwatch.cfg.example to helpwatch_settings.txt and set your webhook.
+$cfgPath = Join-Path $PSScriptRoot "helpwatch_settings.txt"
 if (-not (Test-Path $cfgPath)) {
-    Write-Host "helpwatch: missing helpwatch.cfg - copy helpwatch.cfg.example and set your webhook URL."
+    Write-Host "helpwatch: missing helpwatch_settings.txt - copy helpwatch.cfg.example, rename it, and set your Discord webhook URL. Then configure everything else in-game via the [HW] button."
+    pause
     exit 1
 }
 $webhook = (Get-Content $cfgPath | Where-Object { $_ -match "^WEBHOOK=" }) -replace "^WEBHOOK=", ""
-if (-not $webhook) { Write-Host "helpwatch: WEBHOOK not set in helpwatch.cfg"; exit 1 }
+if (-not $webhook) { Write-Host "helpwatch: WEBHOOK not set in helpwatch_settings.txt"; pause; exit 1 }
 $alerts  = Join-Path $PSScriptRoot "alerts.log"
 
 if (-not (Test-Path $alerts)) { New-Item -ItemType File -Path $alerts | Out-Null }

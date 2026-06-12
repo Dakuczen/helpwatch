@@ -1,1 +1,13 @@
+# helpwatch_settings.txt - copy this to helpwatch_settings.txt and fill in your webhook.
+# All other settings are managed from the [HW] button in-game.
 WEBHOOK=https://discord.com/api/webhooks/YOUR_ID/YOUR_TOKEN
+WATCH_NATION=true
+WATCH_GUILD=true
+WATCH_FAMILY=true
+WATCH_LOCAL=true
+ALERT_HELP=true
+ALERT_DEFENSE=true
+ALERT_PVP=true
+ALERT_PVPRAID=true
+COOLDOWN=900
+SHOW_IN_GAME=true
