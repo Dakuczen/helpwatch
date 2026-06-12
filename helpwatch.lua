@@ -194,11 +194,43 @@ end
 -- ===== emit =====
 local lastSent = {}
 
+-- ===== alert popup =====
+local POPUP_DURATION = 6
+local popupTimer = 0
+
+local alertPopup = CreateEmptyWindow("helpwatchPopup", "UIParent")
+alertPopup:SetExtent(440, 50)
+alertPopup:AddAnchor("TOP", "UIParent", 0, 120)
+alertPopup:Show(false)
+alertPopup:EnableDrag(true)
+alertPopup:SetHandler("OnDragStart", function(self) self:StartMoving() end)
+alertPopup:SetHandler("OnDragStop",  function(self) self:StopMovingOrSizing() end)
+
+local popupBg = alertPopup:CreateColorDrawable(0.10, 0.04, 0.04, 0.92, "background")
+popupBg:AddAnchor("TOPLEFT",     alertPopup, 0, 0)
+popupBg:AddAnchor("BOTTOMRIGHT", alertPopup, 0, 0)
+
+local popupLabel = alertPopup:CreateChildWidget("label", "hw_popup_lbl", 0, false)
+popupLabel:AddAnchor("CENTER", alertPopup, 0, 0)
+popupLabel.style:SetFontSize(14)
+popupLabel.style:SetColor(1, 0.88, 0.25, 1)
+popupLabel.style:SetAlign(ALIGN_CENTER)
+
+alertPopup:SetHandler("OnUpdate", function(self, dt)
+    if popupTimer > 0 then
+        popupTimer = popupTimer - dt
+        if popupTimer <= 0 then self:Show(false) end
+    end
+end)
+
 local function emit(tier, label, name, message)
     local line = "[" .. tier .. "] [" .. label .. "] " .. tostring(name) .. ": " .. message
     local f = io.open(OUT_PATH, "a")
     if f then f:write(line .. "\n"); f:close() end
     if cfg.show_in_game then
+        popupLabel:SetText(line)
+        popupTimer = POPUP_DURATION
+        alertPopup:Show(true)
         X2Chat:DispatchChatMessage(CMF_SYSTEM, ">> " .. line)
     end
 end
@@ -337,6 +369,12 @@ hwFrame:SetExtent(52, 24)
 hwFrame:AddAnchor("TOPLEFT", "UIParent", 6, 190)
 hwFrame:Show(true)
 hwFrame:EnableDrag(true)
+hwFrame:SetHandler("OnDragStart", function(self) self:StartMoving() end)
+hwFrame:SetHandler("OnDragStop",  function(self) self:StopMovingOrSizing() end)
+
+local hwFrameBg = hwFrame:CreateColorDrawable(0.08, 0.08, 0.08, 0.88, "background")
+hwFrameBg:AddAnchor("TOPLEFT",     hwFrame, 0, 0)
+hwFrameBg:AddAnchor("BOTTOMRIGHT", hwFrame, 0, 0)
 
 local hwBtn = CreateActionButton({
     parent      = hwFrame,
