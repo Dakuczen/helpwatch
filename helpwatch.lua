@@ -253,7 +253,7 @@ end
 -- ===== settings window =====
 -- Width must be one of the predefined sizes in windowcommon.lua
 local WIN_W, WIN_H = 350, 400
-local COL1_X, COL2_X = 16, 179   -- two-column button layout
+local COL1_X, COL2_X = 20, 183   -- two-column button layout (20px clears the wooden border)
 local BTN_W, BTN_H = 155, 26
 local COLOR_ON  = { 0.15, 0.50, 0.15, 1 }   -- dark green text
 local COLOR_OFF = { 0.65, 0.15, 0.10, 1 }   -- dark red text
@@ -263,8 +263,9 @@ local settingsWindow = CreateBasicWindow("helpwatchSettings", "helpwatch setting
     WIN_W, WIN_H, "CENTER", 0, 0)
 settingsWindow:Show(false)
 
--- parchment fill to match game's native window style
-local settingsBg = settingsWindow:CreateColorDrawable(0.94, 0.88, 0.74, 0.97, "background")
+-- parchment fill on "artwork" layer so it draws over the skin's border textures
+-- and fully covers the window interior
+local settingsBg = settingsWindow:CreateColorDrawable(0.94, 0.88, 0.74, 0.97, "artwork")
 settingsBg:AddAnchor("TOPLEFT",     settingsWindow, 0, 0)
 settingsBg:AddAnchor("BOTTOMRIGHT", settingsWindow, 0, 0)
 
