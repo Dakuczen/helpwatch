@@ -254,15 +254,16 @@ end
 local WIN_W, WIN_H = 350, 400
 local COL1_X, COL2_X = 16, 179   -- two-column button layout
 local BTN_W, BTN_H = 155, 26
-local COLOR_ON  = { 0.30, 0.90, 0.42, 1 }
-local COLOR_OFF = { 0.80, 0.30, 0.30, 1 }
-local COLOR_HDR = { 0.90, 0.75, 0.40, 1 }
+local COLOR_ON  = { 0.15, 0.50, 0.15, 1 }   -- dark green text
+local COLOR_OFF = { 0.65, 0.15, 0.10, 1 }   -- dark red text
+local COLOR_HDR = { 0.42, 0.22, 0.05, 1 }   -- dark brown, matches game headers
 
 local settingsWindow = CreateBasicWindow("helpwatchSettings", "helpwatch settings",
     WIN_W, WIN_H, "CENTER", 0, 0)
 settingsWindow:Show(false)
 
-local settingsBg = settingsWindow:CreateColorDrawable(0.05, 0.05, 0.08, 0.92, "background")
+-- parchment fill to match game's native window style
+local settingsBg = settingsWindow:CreateColorDrawable(0.94, 0.88, 0.74, 0.97, "background")
 settingsBg:AddAnchor("TOPLEFT",     settingsWindow, 0, 0)
 settingsBg:AddAnchor("BOTTOMRIGHT", settingsWindow, 0, 0)
 
@@ -326,7 +327,7 @@ makeToggle("In-game popup", "show_in_game", COL1_X, 254)
 -- Webhook URL
 makeHeader("Discord webhook URL", 292)
 
-local webhookBg = settingsWindow:CreateColorDrawable(0.05, 0.05, 0.05, 0.85, "background")
+local webhookBg = settingsWindow:CreateColorDrawable(0.75, 0.68, 0.52, 0.90, "background")
 webhookBg:AddAnchor("TOPLEFT", settingsWindow, COL1_X, 312)
 webhookBg:SetExtent(WIN_W - COL1_X * 2, 28)
 
