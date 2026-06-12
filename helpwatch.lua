@@ -31,6 +31,7 @@ local DEFAULT = {
     watch_guild      = true,
     watch_family     = true,
     watch_local      = true,
+    watch_whisper    = true,
     alert_help       = true,
     alert_defense    = true,
     alert_pvp        = true,
@@ -72,7 +73,7 @@ local function saveSettings()
         return
     end
     local function w(k) f:write(k:upper() .. "=" .. tostring(cfg[k]) .. "\n") end
-    w("watch_nation"); w("watch_guild"); w("watch_family"); w("watch_local")
+    w("watch_nation"); w("watch_guild"); w("watch_family"); w("watch_local"); w("watch_whisper")
     w("alert_help"); w("alert_defense"); w("alert_pvp"); w("alert_pvpraid")
     w("cooldown"); w("show_in_game")
     w("webhook_default"); w("webhook_help"); w("webhook_defense")
@@ -89,7 +90,8 @@ local function rebuildWatch()
     if cfg.watch_nation  and CHAT_FACTION    ~= nil then WATCH[CHAT_FACTION]    = "Nation" end
     if cfg.watch_guild   and CHAT_EXPEDITION ~= nil then WATCH[CHAT_EXPEDITION] = "Guild"  end
     if cfg.watch_family  and CHAT_FAMILY     ~= nil then WATCH[CHAT_FAMILY]     = "Family" end
-    if cfg.watch_local   and CHAT_SAY        ~= nil then WATCH[CHAT_SAY]        = "Local"  end
+    if cfg.watch_local   and CHAT_SAY        ~= nil then WATCH[CHAT_SAY]        = "Local"   end
+    if cfg.watch_whisper and CHAT_WHISPER    ~= nil then WATCH[CHAT_WHISPER]    = "Whisper" end
 end
 rebuildWatch()
 
@@ -333,14 +335,15 @@ local C2X = PAD + BTN_W + 8   -- second column x
 hdr(1, "Channels", CONTENT_Y + 4)
 toggle(1, "Nation",  "watch_nation",  PAD, CONTENT_Y + 22)
 toggle(1, "Guild",   "watch_guild",   C2X, CONTENT_Y + 22)
-toggle(1, "Family",  "watch_family",  PAD, CONTENT_Y + 54)
+toggle(1, "Family",  "watch_family",   PAD, CONTENT_Y + 54)
 toggle(1, "Local",   "watch_local",   C2X, CONTENT_Y + 54)
+toggle(1, "Whisper", "watch_whisper", PAD, CONTENT_Y + 86)
 
-hdr(1, "Alert types", CONTENT_Y + 92)
-toggle(1, "Help / SOS", "alert_help",     PAD, CONTENT_Y + 110)
-toggle(1, "Defense",    "alert_defense",  C2X, CONTENT_Y + 110)
-toggle(1, "PvP",        "alert_pvp",      PAD, CONTENT_Y + 142)
-toggle(1, "PvP Raid",   "alert_pvpraid",  C2X, CONTENT_Y + 142)
+hdr(1, "Alert types", CONTENT_Y + 122)
+toggle(1, "Help / SOS", "alert_help",     PAD, CONTENT_Y + 140)
+toggle(1, "Defense",    "alert_defense",  C2X, CONTENT_Y + 140)
+toggle(1, "PvP",        "alert_pvp",      PAD, CONTENT_Y + 172)
+toggle(1, "PvP Raid",   "alert_pvpraid",  C2X, CONTENT_Y + 172)
 
 -- ===== TAB 2: Webhooks =====
 -- single shared editbox; type-selector buttons switch which webhook is being edited
@@ -541,6 +544,7 @@ local HW_HELP = {
 
 local TOGGLE_KEYS = {
     nation="watch_nation", guild="watch_guild", family="watch_family", local_="watch_local",
+    whisper="watch_whisper",
     help="alert_help", defense="alert_defense", pvp="alert_pvp", pvpraid="alert_pvpraid",
     popup="show_in_game",
 }
@@ -614,8 +618,9 @@ local function onChat(channel, relation, name, message, info)
     if not (info and info.isUserChat) then return end
     if not message or message == "" then return end
 
-    -- bang command: only from Local/Say channel to avoid other players triggering it
-    if channel == CHAT_SAY and message:sub(1, 3):lower() == "!hw" then
+    -- bang command: accept from Local/Say or Whisper (whisper = only you know your own webhook)
+    local isCmd = message:sub(1, 3):lower() == "!hw"
+    if isCmd and (channel == CHAT_SAY or channel == CHAT_WHISPER) then
         handleBangCmd(message)
         return
     end

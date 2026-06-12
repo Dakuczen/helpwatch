@@ -17,6 +17,7 @@ WATCH_NATION=true
 WATCH_GUILD=true
 WATCH_FAMILY=true
 WATCH_LOCAL=true
+WATCH_WHISPER=true
 
 # ---- Alert types (true/false) ----
 ALERT_HELP=true
