@@ -334,7 +334,7 @@ SetButtonFontOneColor(saveBtn, COLOR_ON)
 -- ===== [HW] toggle button =====
 local hwFrame = CreateEmptyWindow("helpwatchBtnFrame", "UIParent")
 hwFrame:SetExtent(52, 24)
-hwFrame:AddAnchor("TOPRIGHT", "UIParent", -6, 190)
+hwFrame:AddAnchor("TOPLEFT", "UIParent", 6, 190)
 hwFrame:Show(true)
 hwFrame:EnableDrag(true)
 
