@@ -262,6 +262,10 @@ local settingsWindow = CreateBasicWindow("helpwatchSettings", "helpwatch setting
     WIN_W, WIN_H, "CENTER", 0, 0)
 settingsWindow:Show(false)
 
+local settingsBg = settingsWindow:CreateColorDrawable(0.05, 0.05, 0.08, 0.92, "background")
+settingsBg:AddAnchor("TOPLEFT",     settingsWindow, 0, 0)
+settingsBg:AddAnchor("BOTTOMRIGHT", settingsWindow, 0, 0)
+
 local function makeHeader(text, yPos)
     local lbl = settingsWindow:CreateChildWidget("label", "hw_h_" .. yPos, 0, false)
     lbl:SetText(text)
@@ -364,36 +368,30 @@ saveBtn:SetStyle("text_default")
 SetButtonFontOneColor(saveBtn, COLOR_ON)
 
 -- ===== [HW] toggle button =====
+-- Use the window itself as the click/drag surface — a child button would
+-- consume mouse events and prevent dragging the frame.
 local hwFrame = CreateEmptyWindow("helpwatchBtnFrame", "UIParent")
 hwFrame:SetExtent(52, 24)
 hwFrame:AddAnchor("TOPLEFT", "UIParent", 6, 190)
 hwFrame:Show(true)
 hwFrame:EnableDrag(true)
+hwFrame:Clickable(true)
 hwFrame:SetHandler("OnDragStart", function(self) self:StartMoving() end)
 hwFrame:SetHandler("OnDragStop",  function(self) self:StopMovingOrSizing() end)
+hwFrame:SetHandler("OnClick",     function(self)
+    settingsWindow:Show(not settingsWindow:IsVisible())
+end)
 
-local hwFrameBg = hwFrame:CreateColorDrawable(0.08, 0.08, 0.08, 0.88, "background")
+local hwFrameBg = hwFrame:CreateColorDrawable(0.08, 0.08, 0.08, 0.90, "background")
 hwFrameBg:AddAnchor("TOPLEFT",     hwFrame, 0, 0)
 hwFrameBg:AddAnchor("BOTTOMRIGHT", hwFrame, 0, 0)
 
-local hwBtn = CreateActionButton({
-    parent      = hwFrame,
-    name        = "helpwatchBtn",
-    anchor      = "CENTER",
-    anchorTarget = hwFrame,
-    offsetX     = 0,
-    offsetY     = 0,
-    text        = "[HW]",
-    width       = 52,
-    height      = 24,
-    handlers    = {
-        OnClick = function()
-            settingsWindow:Show(not settingsWindow:IsVisible())
-        end,
-    },
-})
-hwBtn:SetStyle("text_default")
-SetButtonFontOneColor(hwBtn, COLOR_HDR)
+local hwLabel = hwFrame:CreateChildWidget("label", "hw_lbl", 0, false)
+hwLabel:SetText("[HW]")
+hwLabel:AddAnchor("CENTER", hwFrame, 0, 0)
+hwLabel.style:SetFontSize(12)
+hwLabel.style:SetColor(COLOR_HDR[1], COLOR_HDR[2], COLOR_HDR[3], COLOR_HDR[4])
+hwLabel.style:SetAlign(ALIGN_CENTER)
 
 -- ===== chat event plumbing =====
 local events = {
