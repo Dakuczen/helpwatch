@@ -253,7 +253,7 @@ end
 -- ===== settings window =====
 -- Width must be one of the predefined sizes in windowcommon.lua
 local WIN_W, WIN_H = 350, 400
-local COL1_X, COL2_X = 20, 183   -- two-column button layout (20px clears the wooden border)
+local COL1_X, COL2_X = 28, 191   -- two-column button layout (28px clears the wooden border)
 local BTN_W, BTN_H = 155, 26
 local COLOR_ON  = { 0.15, 0.50, 0.15, 1 }   -- dark green text
 local COLOR_OFF = { 0.65, 0.15, 0.10, 1 }   -- dark red text
@@ -298,6 +298,7 @@ local function makeToggle(label, key, xPos, yPos)
             OnClick = function(self)
                 cfg[key] = not cfg[key]
                 self:SetText(label .. ": " .. (cfg[key] and "ON" or "OFF"))
+                self:SetExtent(BTN_W, BTN_H)
                 applyToggleColor(self, cfg[key])
                 if key:sub(1, 6) == "watch_" then rebuildWatch() end
             end,
