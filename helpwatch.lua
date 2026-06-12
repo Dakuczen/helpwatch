@@ -20,6 +20,7 @@ ADDON:ImportObject(OBJECT_TYPE.LABEL)
 ADDON:ImportObject(OBJECT_TYPE.ICON_DRAWABLE)
 ADDON:ImportObject(OBJECT_TYPE.IMAGE_DRAWABLE)
 ADDON:ImportObject(OBJECT_TYPE.EDITBOX_MULTILINE)
+ADDON:ImportObject(OBJECT_TYPE.X2_EDITBOX)
 ADDON:ImportAPI(API_TYPE.CHAT.id)
 
 -- ===== paths =====
@@ -331,13 +332,9 @@ local webhookBg = settingsWindow:CreateColorDrawable(0.75, 0.68, 0.52, 0.90, "ba
 webhookBg:AddAnchor("TOPLEFT", settingsWindow, COL1_X, 312)
 webhookBg:SetExtent(WIN_W - COL1_X * 2, 28)
 
-local webhookBox = settingsWindow:CreateChildWidget("editboxmultiline", "hw_webhook", 0, true)
+local webhookBox = settingsWindow:CreateChildWidget("x2editbox", "hw_webhook", 0, true)
 webhookBox:AddAnchor("TOPLEFT", settingsWindow, COL1_X, 312)
-webhookBox:SetWidth(WIN_W - COL1_X * 2)
-webhookBox:SetHeight(28)
-webhookBox:SetInset(5, 5, 5, 5)
-webhookBox:SetMaxTextLength(256)
-webhookBox:SetGuideText("https://discord.com/api/webhooks/...")
+webhookBox:SetExtent(WIN_W - COL1_X * 2, 26)
 
 -- populate webhook field whenever window opens
 settingsWindow.ShowProc = function()
