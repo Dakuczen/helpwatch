@@ -251,23 +251,57 @@ local function onChat(channel, relation, name, message, info)
 end
 
 -- ===== settings window =====
--- Width must be one of the predefined sizes in windowcommon.lua
-local WIN_W, WIN_H = 350, 400
-local COL1_X, COL2_X = 28, 191   -- two-column button layout (28px clears the wooden border)
-local BTN_W, BTN_H = 155, 26
-local COLOR_ON  = { 0.15, 0.50, 0.15, 1 }   -- dark green text
-local COLOR_OFF = { 0.65, 0.15, 0.10, 1 }   -- dark red text
-local COLOR_HDR = { 0.42, 0.22, 0.05, 1 }   -- dark brown, matches game headers
+local WIN_W, WIN_H = 360, 420
+local PAD = 16
+local COL1_X = PAD
+local COL2_X = PAD + 178
+local BTN_W, BTN_H = 152, 26
+local COLOR_ON  = { 0.10, 0.45, 0.10, 1 }
+local COLOR_OFF = { 0.60, 0.12, 0.08, 1 }
+local COLOR_HDR = { 0.38, 0.18, 0.04, 1 }
 
-local settingsWindow = CreateBasicWindow("helpwatchSettings", "helpwatch settings",
-    WIN_W, WIN_H, "CENTER", 0, 0)
+-- plain CreateEmptyWindow so we fully own the layout with no chrome clipping
+local settingsWindow = CreateEmptyWindow("helpwatchSettings", "UIParent")
+settingsWindow:SetExtent(WIN_W, WIN_H)
+settingsWindow:AddAnchor("CENTER", "UIParent", 0, 0)
 settingsWindow:Show(false)
+settingsWindow:EnableDrag(true)
+settingsWindow:SetCloseOnEscape(true)
+settingsWindow:SetHandler("OnDragStart", function(self) self:StartMoving() end)
+settingsWindow:SetHandler("OnDragStop",  function(self) self:StopMovingOrSizing() end)
 
--- parchment fill on "artwork" layer so it draws over the skin's border textures
--- and fully covers the window interior
-local settingsBg = settingsWindow:CreateColorDrawable(0.94, 0.88, 0.74, 0.97, "artwork")
-settingsBg:AddAnchor("TOPLEFT",     settingsWindow, 0, 0)
-settingsBg:AddAnchor("BOTTOMRIGHT", settingsWindow, 0, 0)
+-- border + fill
+local swBorder = settingsWindow:CreateColorDrawable(0.55, 0.40, 0.18, 1.0, "background")
+swBorder:AddAnchor("TOPLEFT",     settingsWindow, 0, 0)
+swBorder:AddAnchor("BOTTOMRIGHT", settingsWindow, 0, 0)
+
+local swBg = settingsWindow:CreateColorDrawable(0.94, 0.88, 0.74, 1.0, "background")
+swBg:AddAnchor("TOPLEFT",     settingsWindow,  2,  2)
+swBg:AddAnchor("BOTTOMRIGHT", settingsWindow, -2, -2)
+
+-- title
+local swTitle = settingsWindow:CreateChildWidget("label", "hw_title", 0, false)
+swTitle:SetText("helpwatch settings")
+swTitle:AddAnchor("TOP", settingsWindow, 0, 10)
+swTitle.style:SetFontSize(16)
+swTitle.style:SetColor(COLOR_HDR[1], COLOR_HDR[2], COLOR_HDR[3], 1)
+swTitle.style:SetAlign(ALIGN_CENTER)
+
+-- close button
+local swClose = CreateActionButton({
+    parent       = settingsWindow,
+    name         = "hw_close",
+    anchor       = "TOPRIGHT",
+    anchorTarget = settingsWindow,
+    offsetX      = -PAD,
+    offsetY      = 8,
+    text         = "X",
+    width        = 22,
+    height       = 22,
+    handlers     = { OnClick = function() settingsWindow:Show(false) end },
+})
+swClose:SetStyle("text_default")
+SetButtonFontOneColor(swClose, COLOR_HDR)
 
 local function makeHeader(text, yPos)
     local lbl = settingsWindow:CreateChildWidget("label", "hw_h_" .. yPos, 0, false)
@@ -310,51 +344,54 @@ local function makeToggle(label, key, xPos, yPos)
 end
 
 -- Channels
-makeHeader("Channels", 52)
-makeToggle("Nation",  "watch_nation",  COL1_X, 74)
-makeToggle("Guild",   "watch_guild",   COL2_X, 74)
-makeToggle("Family",  "watch_family",  COL1_X, 106)
-makeToggle("Local",   "watch_local",   COL2_X, 106)
+makeHeader("Channels", 44)
+makeToggle("Nation",  "watch_nation",  COL1_X, 62)
+makeToggle("Guild",   "watch_guild",   COL2_X, 62)
+makeToggle("Family",  "watch_family",  COL1_X, 94)
+makeToggle("Local",   "watch_local",   COL2_X, 94)
 
 -- Alert types
-makeHeader("Alert types", 142)
-makeToggle("Help / SOS", "alert_help",     COL1_X, 164)
-makeToggle("Defense",    "alert_defense",  COL2_X, 164)
-makeToggle("PvP",        "alert_pvp",      COL1_X, 196)
-makeToggle("PvP Raid",   "alert_pvpraid",  COL2_X, 196)
+makeHeader("Alert types", 130)
+makeToggle("Help / SOS", "alert_help",     COL1_X, 148)
+makeToggle("Defense",    "alert_defense",  COL2_X, 148)
+makeToggle("PvP",        "alert_pvp",      COL1_X, 180)
+makeToggle("PvP Raid",   "alert_pvpraid",  COL2_X, 180)
 
 -- Options
-makeHeader("Options", 232)
-makeToggle("In-game popup", "show_in_game", COL1_X, 254)
+makeHeader("Options", 216)
+makeToggle("In-game popup", "show_in_game", COL1_X, 234)
 
 -- Webhook URL
-makeHeader("Discord webhook URL", 292)
+makeHeader("Discord webhook URL", 272)
 
-local webhookBg = settingsWindow:CreateColorDrawable(0.75, 0.68, 0.52, 0.90, "background")
-webhookBg:AddAnchor("TOPLEFT", settingsWindow, COL1_X, 312)
-webhookBg:SetExtent(WIN_W - COL1_X * 2, 28)
+local webhookBg = settingsWindow:CreateColorDrawable(0.80, 0.72, 0.55, 1.0, "background")
+webhookBg:AddAnchor("TOPLEFT", settingsWindow, COL1_X, 290)
+webhookBg:SetExtent(WIN_W - PAD * 2, 28)
 
-local webhookBox = settingsWindow:CreateChildWidget("x2editbox", "hw_webhook", 0, true)
-webhookBox:AddAnchor("TOPLEFT", settingsWindow, COL1_X, 312)
-webhookBox:SetExtent(WIN_W - COL1_X * 2, 26)
+local webhookBox = settingsWindow:CreateChildWidget("editboxmultiline", "hw_webhook", 0, true)
+webhookBox:AddAnchor("TOPLEFT", settingsWindow, COL1_X, 290)
+webhookBox:SetWidth(WIN_W - PAD * 2)
+webhookBox:SetHeight(26)
+webhookBox:SetInset(4, 4, 4, 4)
+webhookBox:SetMaxTextLength(256)
 
 -- populate webhook field whenever window opens
-settingsWindow.ShowProc = function()
+settingsWindow:SetHandler("OnShow", function()
     webhookBox:SetText(cfg.webhook or "")
-end
+end)
 
 -- Save button
 local saveBtn = CreateActionButton({
-    parent      = settingsWindow,
-    name        = "hw_save",
-    anchor      = "BOTTOM",
+    parent       = settingsWindow,
+    name         = "hw_save",
+    anchor       = "BOTTOM",
     anchorTarget = settingsWindow,
-    offsetX     = 0,
-    offsetY     = -14,
-    text        = "Save",
-    width       = 110,
-    height      = 30,
-    handlers    = {
+    offsetX      = 0,
+    offsetY      = -14,
+    text         = "Save",
+    width        = 110,
+    height       = 30,
+    handlers     = {
         OnClick = function()
             cfg.webhook = webhookBox:GetText()
             saveSettings()
